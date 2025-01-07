@@ -1,6 +1,6 @@
 // import "./App.css";
 import Groq from "groq-sdk";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type Message = {
   role: string;
@@ -33,16 +33,20 @@ function App() {
   }
 
   async function getGroqChatCompletion() {
+    const formattedMessages = messages.map((msg) => ({
+      role: msg.role as "system" | "user" | "assistant", // Ensure role is one of the expected types
+      content: msg.content,
+    }));
     return groq.chat.completions.create({
       messages: [
         {
           role: "system",
           content: "i am going to create a to-do list from user's posted text",
         },
-        ...messages, // Include previous messages
+        ...formattedMessages,
         {
           role: "user",
-          content: userInput, // Use user input
+          content: userInput,
         },
       ],
       model: "llama-3.3-70b-versatile",
@@ -54,14 +58,14 @@ function App() {
     });
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setMessages((prevMessages) => [
       ...prevMessages,
-      { role: "user", content: userInput }, // Add user message
+      { role: "user", content: userInput },
     ]);
-    main(); // Call main to get assistant response
-    setUserInput(""); // Clear input field
+    main();
+    setUserInput("");
   };
 
   function parseTasks(content: string): string[] {
@@ -75,9 +79,7 @@ function App() {
         tasks.push(match[1].trim()); // اضافه کردن کار به لیست
       }
     }
-
-    console.log("Extracted tasks:", tasks);
-    return tasks; // برگرداندن لیست کارها
+    return tasks;
   }
 
   return (
