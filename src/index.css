@@ -68,32 +68,74 @@ button:focus-visible {
 }
 
 .custom-checkbox {
-  appearance: none; /* Remove default checkbox styling */
-  width: 20px; /* Set width */
-  height: 20px; /* Set height */
-  border: 2px solid violet; /* Border color */
-  border-radius: 4px; /* Rounded corners */
-  cursor: pointer; /* Pointer cursor on hover */
-  outline: none; /* Remove outline */
-  position: relative; /* Position for the checkmark */
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid violet;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  flex-shrink: 0;
 }
 
 .custom-checkbox:checked {
-  background-color: violet; /* Background color when checked */
+  background-color: violet;
 }
 
 .custom-checkbox:checked::after {
-  content: ""; /* Create a checkmark */
+  content: "";
   position: absolute;
-  left: 5px; /* Position checkmark */
-  top: 1px; /* Position checkmark */
-  width: 5px; /* Checkmark width */
-  height: 10px; /* Checkmark height */
-  border: solid white; /* Checkmark color */
-  border-width: 0 2px 2px 0; /* Checkmark shape */
-  transform: rotate(45deg); /* Rotate to form a checkmark */
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 .custom-checkbox:checked + .task-label {
-  text-decoration: line-through; /* Add line-through effect when checked */
+  text-decoration: line-through;
+}
+
+/* loading animations */
+
+.loading-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  max-width: fit-content;
+  background: transparent;
+  border-radius: 12px 12px 12px 0;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: violet;
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: pulse 1.4s infinite ease-in-out;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
 }

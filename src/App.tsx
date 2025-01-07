@@ -1,6 +1,7 @@
 // import "./App.css";
 import Groq from "groq-sdk";
 import { useState } from "react";
+import Loading from "./Loading";
 
 type Message = {
   role: string;
@@ -16,20 +17,31 @@ function App() {
   const [userInput, setUserInput] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [todoList, setTodoList] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errMessage, setErrMessage] = useState<string>("");
 
   async function main() {
-    const chatCompletion = await getGroqChatCompletion();
-    // Print the completion returned by the LLM.
-    // console.log(chatCompletion.choices[0]?.message?.content || "");
-    const tasks = parseTasks(chatCompletion.choices[0]?.message?.content || "");
-    setTodoList(tasks);
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      {
-        role: "assistant",
-        content: chatCompletion.choices[0]?.message?.content || "",
-      },
-    ]);
+    try {
+      setIsLoading(true);
+      const chatCompletion = await getGroqChatCompletion();
+      const tasks = parseTasks(
+        chatCompletion.choices[0]?.message?.content || ""
+      );
+      setTodoList(tasks);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          role: "assistant",
+          content: chatCompletion.choices[0]?.message?.content || "",
+        },
+      ]);
+      setIsLoading(false);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      setIsLoading(false);
+      console.log(error);
+      setErrMessage("something went wrong, try again later");
+    }
   }
 
   async function getGroqChatCompletion() {
@@ -41,7 +53,8 @@ function App() {
       messages: [
         {
           role: "system",
-          content: "i am going to create a to-do list from user's posted text",
+          content:
+            "I am going to create a to-do list from the text the user sends me and display the items on this list with numbers. If the user sends text that is not related to their to-do list, I will respond by asking them to tell me the tasks they want to accomplish within a specific time frame.",
         },
         ...formattedMessages,
         {
@@ -111,18 +124,25 @@ function App() {
               {messages.map((msg, index) => (
                 <div key={index} className="my-2">
                   <strong className="text-violet-400">{msg.role}</strong> :{" "}
-                  {msg.content}
+                  {msg.role !== "assistant" &&
+                  index == messages.length - 1 &&
+                  isLoading ? (
+                    <Loading />
+                  ) : (
+                    msg.content
+                  )}
                 </div>
               ))}
             </div>
+            <p className="text-red-600 font-medium text-lg">{errMessage}</p>
           </section>
         </div>
 
         {/* to-list board */}
-        <div className="w-[40%]">
+        <div className="w-[30%] mx-auto">
           <h1 className="text-2xl font-medium mb-5"> TODO List Board </h1>
 
-          <div className="border-4 rounded-lg border-violet-700 w-full h-[600px]">
+          <div className="border-4 rounded-lg border-violet-700 w-full h-[80vh] overflow-y-auto">
             {todoList.length ? (
               <ul className="py-10 px-12">
                 {todoList.map((task, index) => (
