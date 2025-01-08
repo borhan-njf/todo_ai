@@ -90,9 +90,9 @@ function App() {
 
   return (
     <>
-      <div className="flex gap-10 w-screen px-10 py-8 font-sans">
+      <div className="flex flex-col-reverse lg:flex-row gap-10 w-screen px-10 py-8 font-sans">
         {/* conversation board */}
-        <div className="w-[60%]">
+        <div className="w-full lg:w-[60%]">
           <h1 className="text-2xl font-medium mb-5">Conversation Board</h1>
           <section className="w-full">
             <form onSubmit={handleSubmit}>
@@ -133,10 +133,10 @@ function App() {
         </div>
 
         {/* to-list board */}
-        <div className="w-[30%] mx-auto">
+        <div className="w-full lg:w-[30%] mx-auto">
           <h1 className="text-2xl font-medium mb-5"> TODO List Board </h1>
 
-          <div className="border-4 rounded-lg border-violet-700 w-full h-[80vh] overflow-y-auto">
+          <div className="border-4 rounded-lg border-violet-700 w-full h-[50vh] lg:h-[80vh] overflow-y-auto">
             {todoList.length ? (
               <ul className="py-10 px-12">
                 {todoList.map((task, index) => (
