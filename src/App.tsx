@@ -2,6 +2,7 @@
 import Groq from "groq-sdk";
 import { useState } from "react";
 import Loading from "./Loading";
+import { onEnterPress, parseTasks } from "./helpers";
 
 type Message = {
   role: string;
@@ -36,6 +37,7 @@ function App() {
         },
       ]);
       setIsLoading(false);
+      setErrMessage("");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setIsLoading(false);
@@ -73,27 +75,18 @@ function App() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!userInput) {
+      setErrMessage("the field is empty!");
+      return;
+    }
     setMessages((prevMessages) => [
       ...prevMessages,
       { role: "user", content: userInput },
     ]);
     main();
     setUserInput("");
+    setErrMessage("");
   };
-
-  function parseTasks(content: string): string[] {
-    const lines = content.split("\n"); // تقسیم متن به خطوط
-    const tasks: string[] = [];
-
-    for (const line of lines) {
-      const regex = /^\d+\.\s*(.*)$/; // الگوی regex برای شناسایی خطوط لیست
-      const match = line.match(regex);
-      if (match) {
-        tasks.push(match[1].trim()); // اضافه کردن کار به لیست
-      }
-    }
-    return tasks;
-  }
 
   return (
     <>
@@ -110,6 +103,7 @@ function App() {
                 placeholder="write down the TASKS you want to do in order of priority here"
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
+                onKeyDown={(e) => onEnterPress(e, handleSubmit)}
               />
               <div className="flex justify-end mt-2 my-4">
                 <button
